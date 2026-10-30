@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lastro</title>
+  <link rel="icon" href="/favicon.ico" sizes="48x48">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#0B1220">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <img class="brand-logo" src="/brand/svg/lastro-horizontal-escuro.svg" alt="Lastro.app">
+      </div>
+
+      <nav class="nav-menu">
+        <button class="nav-item active" data-tab="dashboard">
+          <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>Início</button>
+
+        <button class="nav-item" data-tab="quick-entry">
+          <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>Registrar saldo</button>
+
+        <button class="nav-item" data-tab="import-inter">
+          <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>Importar extrato</button>
+
+        <button class="nav-item" data-tab="history">
+          <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>Histórico</button>
+
+        <button class="nav-item" data-tab="investments">
+          <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>Carteira</button>
+
+        <button class="nav-item" data-tab="planning">
+          <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 10h18M8 14h3M8 17h7"></path></svg>Planejamento</button>
+
+        <button class="nav-item" data-tab="backup">
+          <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>Configurações</button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button id="themeToggleBtn" class="btn-sidebar-control" title="Alternar Tema Claro / Escuro">
+          <span class="theme-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13Z"></path></svg></span>
+          <span class="theme-label">Tema Escuro</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Header -->
+      <header class="top-header">
+        <div class="header-titles">
+          <h1 id="pageTitle">Início</h1>
+          <p id="pageSubtitle"></p>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-secondary" id="btnTogglePrivacy" title="Ocultar ou Mostrar Valores em Reais">
+            <span id="privacyIcon">
+              <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </span>
+            <span id="privacyText">Ocultar Valores</span>
+          </button>
+
+          <button class="btn btn-secondary" id="btnRefreshData" title="Atualizar carteira (R)">
+            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 7v5h-5"></path><path d="M4 17v-5h5"></path><path d="M5.6 9a7 7 0 0 1 11.55-2.6L20 12M4 12l2.85 5.6A7 7 0 0 0 18.4 15"></path></svg>
+            Atualizar
+          </button>
+
+          <button class="btn btn-secondary compact-view-button" id="btnOpenCompactView" title="Abrir painel compacto" aria-label="Abrir painel compacto">
+            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M3 9h18M8 9v11"></path></svg><span>Visão rápida</span>
+          </button>
+          
+          <button class="btn btn-primary" id="btnOpenNewInvestment" title="Novo ativo (N)">Novo ativo</button>
+        </div>
+      </header>
+
+      <!-- Alert Notification -->
+      <div id="toastNotification" class="toast hidden"></div>
+
+      <!-- BANNER DE AVISO DE VENCIMENTOS PRÓXIMOS (< 30 DIAS) -->
+      <div id="maturityAlertBanner" class="alert-banner hidden">
+        <div class="alert-banner-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 2.7 17a2 2 0 0 0 1.7 3h15.2a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"></path><path d="M12 9v4m0 4h.01"></path></svg></div>
+        <div class="alert-banner-content" id="maturityAlertText">
+          <strong>Aviso de Vencimento:</strong> Você tem investimentos com resgate próximo!
+        </div>
+      </div>
+
+      <!-- TAB 1: DASHBOARD -->
+      <section id="tab-dashboard" class="tab-pane active">
+        
+        <!-- TOP CARDS: META DE PATRIMÔNIO & DÓLAR EM TEMPO REAL -->
+        <section class="portfolio-overview">
+  <div class="portfolio-hero">
+    <div class="portfolio-main">
+      <div class="portfolio-heading">
+        <span class="eyebrow"><img class="portfolio-mark" src="/brand/svg/lastro-symbol-color.svg" alt="">Seu patrimônio</span>
+        <div class="portfolio-total currency-sensitive" id="kpiNet">Sem dados ainda</div>
+        <div class="portfolio-excluding-usd" id="portfolioExcludingUsd" hidden>
+          <span>Sem a reserva em dólar</span>
+          <strong id="kpiNetWithoutUsd" class="currency-sensitive">Sem dados ainda</strong>
+        </div>
+      </div>
+      <div class="portfolio-breakdown">
+        <span>Bruto <strong id="kpiGross" class="currency-sensitive">Sem dados ainda</strong></span>
+        <span>Impostos <strong id="kpiTax" class="currency-sensitive">Sem dados ainda</strong></span>
+        <span id="kpiLatestDate">Sem dados ainda</span>
+      </div>
+    </div>
+
+    <div class="goal-inline">
+      <div class="goal-inline-heading">
+        <span>Meta de patrimônio</span>
+        <button class="btn btn-secondary btn-sm" id="btnEditGoalDirect" title="Editar meta">
+          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 13.5-12.5Z"></path></svg>
+          Editar
+        </button>
+      </div>
+      <div class="goal-inline-value" id="goalRemainingDisplay">Sem dados ainda</div>
+      <div class="progress-track"><div class="progress-bar" id="goalProgressBar" style="width:0%"></div></div>
+      <div class="goal-inline-foot">
+        <span><strong id="goalCurrentDisplay" class="currency-sensitive">Sem dados ainda</strong> de <strong id="goalTargetDisplay" class="currency-sensitive">R$ 100.000,00</strong></span>
+        <span id="goalPctDisplay">Sem dados</span>
+      </div>
+    </div>
+
+    <div id="dashboardEmptyState" class="dashboard-empty-state">
+      Registre o primeiro saldo pra ver o gráfico.
+      <button class="btn btn-primary btn-sm" onclick="switchTab('quick-entry')">Registrar saldo</button>
+    </div>
+  </div>
+
+  <div class="dashboard-stats" id="dashboardStats" hidden>
+    <div class="dashboard-stat">
+      <span>Capital investido</span>
+      <strong id="kpiInvested" class="currency-sensitive">Sem dados ainda</strong>
+      <small>Lucro acumulado <b id="kpiTotalProfit" class="currency-sensitive yield-positive">Sem dados ainda</b></small>
+    </div>
+    <div class="dashboard-stat">
+      <span>Rendeu hoje</span>
+      <strong id="kpiTodayYield" class="currency-sensitive">Sem dados ainda</strong>
+      <small>Líquido <b id="kpiTodayNet" class="currency-sensitive yield-positive">Sem dados ainda</b><span id="kpiTodayPct">Sem histórico</span></small>
+    </div>
+    <div class="dashboard-stat">
+      <span>Este mês</span>
+      <strong id="kpiMonthNet" class="currency-sensitive yield-positive">Sem dados ainda</strong>
+      <small>Bruto <b id="kpiMonthGross" class="currency-sensitive">Sem dados ainda</b></small>
+    </div>
+    <div class="dashboard-stat">
+      <span>No ano</span>
+      <strong id="kpiYearNet" class="currency-sensitive yield-positive">Sem dados ainda</strong>
+      <small>Bruto <b id="kpiYearGross" class="currency-sensitive">Sem dados ainda</b></small>
+    </div>
+    <div class="dashboard-stat">
+      <span>Últimos 12 meses</span>
+      <strong id="kpi12MonthsNet" class="currency-sensitive yield-positive">Sem dados ainda</strong>
+      <small>Bruto <b id="kpi12MonthsGross" class="currency-sensitive">Sem dados ainda</b></small>
+    </div>
+  </div>
+
+  <div class="reserve-row" id="reserveRow">
+    <div class="reserve-heading">
+      <span class="dollar-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></span>
+      <div><strong>Reserva em dólar</strong><small>US$ 1 = <span id="dollarRateDisplay">R$ 5,70</span> <span id="dollarVariationBadge" class="rate-change">—</span></small></div>
+    </div>
+    <div class="reserve-actions">
+        <button class="btn btn-secondary btn-sm" id="btnEditUsdAmount">Adicionar dólares</button>
+        <button class="btn btn-secondary btn-sm icon-button" id="btnRefreshDollarRate" title="Atualizar cotação" aria-label="Atualizar cotação"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 7v5h-5"></path><path d="M4 17v-5h5"></path><path d="M5.6 9a7 7 0 0 1 11.55-2.6L20 12M4 12l2.85 5.6A7 7 0 0 0 18.4 15"></path></svg></button>
+    </div>
+    <div class="reserve-values">
+      <span>Saldo <strong id="usdAmountDisplay" class="currency-sensitive">Sem dados ainda</strong></span>
+      <span>Em reais <strong id="usdInBrlDisplay" class="currency-sensitive">Sem dados ainda</strong></span>
+    </div>
+    <label class="reserve-include" for="checkIncludeUsdInPatrimony">
+      <span class="reserve-include-copy"><strong>Somar ao patrimônio</strong><small>Incluir o saldo convertido</small></span>
+      <input type="checkbox" id="checkIncludeUsdInPatrimony">
+      <span class="reserve-switch" aria-hidden="true"></span>
+    </label>
+    <span id="dollarLastUpdate" class="reserve-updated">Cotação automática</span>
+  </div>
+
+  <div id="dashboardFreshness" class="dashboard-freshness" hidden>
+    <span id="dashboardFreshnessText"></span>
+    <button class="text-action" type="button" onclick="switchTab('quick-entry')">Registrar saldos</button>
+  </div>
+
+  <div class="dashboard-load-error" id="dashboardLoadError" hidden>
+    Não consegui carregar sua carteira. Confira a conexão e tente novamente.
+    <button class="btn btn-secondary btn-sm" onclick="loadDashboardData()">Tentar novamente</button>
+  </div>
+</section>
+<!-- Filter bar -->
+        <div class="filter-card">
+          <div class="filter-group">
+            <label for="filterInvestment">Filtrar Ativo:</label>
+            <select id="filterInvestment" class="form-control">
+              <option value="">Todos os ativos</option>
+            </select>
+          </div>
+          <div class="filter-actions">
+            <button class="btn btn-primary" onclick="switchTab('quick-entry')"><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m13 2-3 8h7l-6 12 2-9H6l7-11Z"></path></svg> Registrar saldo</button>
+          </div>
+        </div>
+
+        <!-- CHARTS ROW: Evolução Diária e Gráfico de Pizza de Alocação -->
+        <section class="performance-panel" aria-labelledby="performanceTitle">
+          <div class="performance-header">
+            <div>
+              <h3 id="performanceTitle">Rentabilidade da carteira</h3>
+              <span id="performancePeriodNote" class="text-muted">Selecione um período</span>
+            </div>
+            <div class="period-switcher" role="group" aria-label="Período da rentabilidade">
+              <button type="button" class="btn-toggle active" data-performance-range="30">30 dias</button>
+              <button type="button" class="btn-toggle" data-performance-range="90">90 dias</button>
+              <button type="button" class="btn-toggle" data-performance-range="ytd">No ano</button>
+              <button type="button" class="btn-toggle" data-performance-range="all">Tudo</button>
+            </div>
+          </div>
+          <div class="performance-metrics">
+            <div><span>Rendimento líquido</span><strong id="performanceYield">Sem dados</strong></div>
+            <div><span>Rentabilidade</span><strong id="performanceReturn">Sem dados</strong></div>
+            <div><span>Do CDI</span><strong id="performanceCdi">Sem dados</strong></div>
+              <div class="real-return-metric"><span>Acima do IPCA</span><strong id="performanceRealReturn">—</strong><small id="performanceRealNote">Atualize o IPCA para comparar</small></div>
+          </div>
+            <div class="ipca-actions"><span id="ipcaSourceNote">IPCA mensal · série oficial do Banco Central</span><button type="button" class="text-action" id="btnRefreshIpca">Atualizar IPCA</button></div>
+        </section>
+
+        <section class="dashboard-followups">
+          <div class="data-card calendar-panel" aria-labelledby="calendarPanelTitle">
+            <div class="card-header calendar-panel-header"><div><h3 id="calendarPanelTitle">Agenda de rendimentos e vencimentos</h3><p>Eventos esperados aparecem como estimativas; marque quando receber.</p></div></div>
+            <div id="calendarEventsList" class="calendar-events-list"><p class="empty-state">Carregando agenda…</p></div>
+            <details class="calendar-add-details">
+              <summary>Agendar juros ou dividendos</summary>
+              <form id="formCalendarEvent" class="calendar-event-form">
+                <div class="form-group"><label for="calendarInvestment">Ativo</label><select id="calendarInvestment" class="form-control" required></select></div>
+                <div class="form-group"><label for="calendarType">Tipo</label><select id="calendarType" class="form-control"><option value="interest">Juros</option><option value="dividend">Dividendos</option></select></div>
+                <div class="form-group"><label for="calendarDate">Data prevista</label><input type="date" id="calendarDate" class="form-control" required></div>
+                <div class="form-group"><label for="calendarAmount">Valor estimado</label><input type="number" id="calendarAmount" class="form-control" min="0" step="0.01" placeholder="Opcional"></div>
+                <div class="form-group"><label for="calendarTitle">Descrição</label><input type="text" id="calendarTitle" class="form-control" maxlength="100" placeholder="Ex.: cupom semestral"></div>
+                <button type="submit" class="btn btn-secondary">Salvar evento</button>
+              </form>
+            </details>
+          </div>
+
+          <div class="data-card scenario-panel" aria-labelledby="scenarioTitle">
+            <div class="card-header"><div><h3 id="scenarioTitle">Simulador de cenários</h3><p>Projeções matemáticas baseadas nas taxas que você informar.</p></div></div>
+            <div class="scenario-starting-value"><span>Patrimônio usado como ponto de partida</span><strong id="scenarioStartingCapital">Sem dados ainda</strong></div>
+            <form id="formScenario" class="scenario-form">
+              <div class="form-group"><label for="scenarioMonthlyContribution">Aporte mensal</label><input type="number" id="scenarioMonthlyContribution" class="form-control" min="0" step="50" value="500"></div>
+              <div class="form-group"><label for="scenarioYears">Prazo em anos</label><input type="number" id="scenarioYears" class="form-control" min="1" max="50" step="1" value="10"></div>
+              <div class="form-group"><label for="scenarioConservativeRate">Conservador (% a.a.)</label><input type="number" id="scenarioConservativeRate" class="form-control" min="0" max="100" step="0.1" value="6"></div>
+              <div class="form-group"><label for="scenarioBaseRate">Base (% a.a.)</label><input type="number" id="scenarioBaseRate" class="form-control" min="0" max="100" step="0.1" value="10"></div>
+              <div class="form-group"><label for="scenarioOptimisticRate">Otimista (% a.a.)</label><input type="number" id="scenarioOptimisticRate" class="form-control" min="0" max="100" step="0.1" value="14"></div>
+              <button type="submit" class="btn btn-primary">Calcular cenários</button>
+            </form>
+            <div id="scenarioResults" class="scenario-results" aria-live="polite"></div>
+            <p class="scenario-disclaimer">Aporte no fim de cada mês. Valores nominais, antes de impostos e inflação; não são promessa de retorno.</p>
+          </div>
+        </section>
+
+        <div class="charts-grid-dashboard">
+          <!-- Daily Yield Chart -->
+          <div class="chart-card">
+            <div class="card-header">
+              <div>
+                <h3>Rendimento diário</h3>
+
+              </div>
+              <div class="legend-inline">
+                <span class="legend-dot dot-light-blue"></span> Líquido <span class="legend-dot dot-blue"></span> Bruto
+              </div>
+            </div>
+            <div class="chart-canvas-wrapper">
+              <canvas id="chartDailyYield"></canvas><div id="chartDailyTooltip" class="chart-tooltip" hidden></div>
+            </div>
+          </div>
+
+          <!-- Pie / Donut Chart (Alocação) -->
+          <div class="chart-card">
+            <div class="card-header">
+              <div>
+                <h3>Alocação da carteira</h3>
+
+              </div>
+              <div class="chart-toggle-group">
+                <button class="btn-toggle active" id="btnTogglePieCategory">Por tipo</button>
+                <button class="btn-toggle" id="btnTogglePieAsset">Por ativo</button>
+              </div>
+            </div>
+            <div class="donut-content-layout">
+              <div class="chart-canvas-wrapper-pie">
+                <div id="chartAllocationBar" class="allocation-bar" aria-label="Distribuição da carteira"></div>
+              </div>
+              <div class="pie-legend-list" id="pieLegendList">
+                <!-- Inserido dinamicamente -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TABELA DE RENTABILIDADE vs CDI E VENCIMENTOS POR ATIVO -->
+        <div class="data-card">
+          <div class="card-header">
+            <div>
+              <h3>Rentabilidade por ativo</h3>
+              
+            </div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">
+              Taxa CDI de referência: <strong id="cdiRateBadge">10.75% a.a.</strong>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Ativo</th>
+                  <th>Instituição</th>
+                  <th>Saldo Líquido</th>
+                  <th>Meta contratada</th>
+                  <th>% do CDI Entregue</th>
+                  <th>Status do CDI</th>
+                  <th>Liquidez</th>
+                  <th>Data de Vencimento</th>
+                  <th>Prazo Restante</th>
+                </tr>
+              </thead>
+              <tbody id="tableCdiComparison">
+                <tr>
+                  <td colspan="9" class="text-center empty-state">Carregando comparativo...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Recent Daily Records Table -->
+        <div class="data-card">
+          <div class="card-header">
+            <div>
+              <h3>Últimos Lançamentos de Saldos</h3>
+              <p>Histórico recente com cálculo automático de rendimento e imposto</p>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Investimento</th>
+                  <th>Valor Bruto</th>
+                  <th>Valor Líquido</th>
+                  <th>Rendimento Bruto</th>
+                  <th>Rendimento Líquido</th>
+                  <th>% do Dia</th>
+                  <th>Aporte / Resgate</th>
+                  <th>IR / IOF</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="tableRecentRecords">
+                <tr>
+                  <td colspan="10" class="text-center empty-state">Carregando dados...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: QUICK ENTRY -->
+      <section id="tab-quick-entry" class="tab-pane">
+        <div class="panel-card">
+          <div class="panel-header">
+            <div>
+              <h2>Lançamento Rápido Diário</h2>
+
+            </div>
+            <div class="quick-entry-date-picker">
+              <label for="quickEntryDate">Data de Referência:</label>
+              <input type="date" id="quickEntryDate" class="form-control" />
+            </div>
+          </div>
+
+          <div id="quickEntryContainer" class="quick-entry-list">
+            <!-- Dynamic rows will be inserted here -->
+          </div>
+
+          <div class="quick-entry-actions">
+            <button class="btn btn-secondary" onclick="loadQuickEntryRows()">Recarregar Linhas</button>
+            <button class="btn btn-primary" id="btnSaveQuickBatch">
+              Salvar Todos os Lançamentos do Dia
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: IMPORTAR EXTRATO -->
+      <section id="tab-import-inter" class="tab-pane">
+        <div class="panel-card">
+          <div class="panel-header">
+            <div>
+              <h2>Importação de Extratos de Investimentos</h2>
+              <p>Carregue o arquivo de extrato ou informe (CSV/TXT) do seu banco ou corretora para registrar seus ativos automaticamente.</p>
+            </div>
+          </div>
+
+          <div class="import-instructions">
+            <div class="instruction-step">
+              <strong>Como obter o extrato:</strong>
+              <p>No App ou Internet Banking do seu banco/corretora, exporte o relatório de investimentos ou extrato da posição.</p>
+            </div>
+            <div class="instruction-step">
+              <strong>Formatos aceitos:</strong>
+              <p>Arquivos <strong>.CSV</strong>, <strong>.TXT</strong> ou simplesmente copie e cole o texto do extrato na caixa abaixo.</p>
+            </div>
+          </div>
+
+          <div class="dropzone-area" id="dropzoneInter">
+            <svg viewBox="0 0 24 24" width="36" height="36" stroke="currentColor" stroke-width="1.5" fill="none" class="dropzone-icon">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            <h4>Selecione ou arraste o arquivo do extrato</h4>
+            <p>Arquivos .CSV ou .TXT exportados</p>
+            <input type="file" id="interFileInput" accept=".csv,.txt,.json" style="display: none;" />
+            <button class="btn btn-secondary" style="margin-top: 1rem;" onclick="document.getElementById('interFileInput').click()">
+              Buscar Arquivo no Computador
+            </button>
+          </div>
+
+          <div style="margin-top: 1.5rem;">
+            <label for="interPasteText" style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 0.5rem;">
+              Ou cole as linhas do extrato / informe aqui:
+            </label>
+            <textarea id="interPasteText" class="form-control" rows="5" placeholder="Exemplo:&#10;CDB INTER LIQUIDEZ DIARIA 102% CDI; 15.420,50; 15.310,20&#10;LCI IPCA 2 ANOS; 20.000,00; 20.000,00&#10;TESOURO SELIC 2029; 10.500,00; 10.420,00"></textarea>
+            <div style="display: flex; justify-content: flex-end; margin-top: 0.75rem;">
+              <button class="btn btn-primary" id="btnProcessInterText">
+                Analisar Texto e Extrair Ativos
+              </button>
+            </div>
+          </div>
+
+          <div id="interPreviewContainer" class="hidden" style="margin-top: 2rem;">
+            <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Ativos Identificados no Documento</h3>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Ativo / Investimento</th>
+                    <th>Instituição</th>
+                    <th>Categoria</th>
+                    <th>Valor Bruto</th>
+                    <th>Valor Líquido</th>
+                    <th>Data</th>
+                  </tr>
+                </thead>
+                <tbody id="interPreviewTableBody"></tbody>
+              </table>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1.25rem;">
+              <button class="btn btn-secondary" onclick="document.getElementById('interPreviewContainer').classList.add('hidden')">Cancelar</button>
+              <button class="btn btn-primary" id="btnConfirmInterImport">Confirmar e Gravar no Banco</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: DETAILED HISTORY -->
+      <section id="tab-history" class="tab-pane">
+        <div class="filter-card">
+          <div class="filter-group">
+            <label for="historyFilterInv">Filtrar por Ativo:</label>
+            <select id="historyFilterInv" class="form-control">
+              <option value="">Todos os Ativos</option>
+            </select>
+          </div>
+          <div class="filter-actions">
+            <button class="btn btn-primary" id="btnOpenSingleEntryModal">
+              + Lançamento Manual
+            </button>
+          </div>
+        </div>
+
+        <div class="data-card">
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Investimento</th>
+                  <th>Bruto</th>
+                  <th>Líquido</th>
+                  <th>Rendimento Bruto</th>
+                  <th>Rendimento Líquido</th>
+                  <th>% Líquido</th>
+                  <th>Aporte / Resgate</th>
+                  <th>IR Retido</th>
+                  <th>Observação</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="tableFullHistory">
+                <tr>
+                  <td colspan="11" class="text-center empty-state">Carregando histórico...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <section class="data-card movement-ledger-panel" aria-labelledby="movementLedgerTitle">
+          <div class="card-header">
+            <div><h3 id="movementLedgerTitle">Movimentações</h3><p>Aportes e resgates ajustam o rendimento; juros, dividendos, taxas e impostos dão contexto ao saldo.</p></div>
+          </div>
+          <form id="formMovement" class="movement-form">
+            <div class="form-group"><label for="movementInvestment">Ativo</label><select id="movementInvestment" class="form-control" required></select></div>
+            <div class="form-group"><label for="movementType">Movimentação</label><select id="movementType" class="form-control" required>
+              <option value="application">Aplicação</option><option value="contribution">Aporte</option><option value="withdrawal">Resgate</option><option value="interest">Juros</option><option value="dividend">Dividendos</option><option value="fee">Taxa</option><option value="tax">Imposto</option>
+            </select></div>
+            <div class="form-group"><label for="movementDate">Data</label><input type="date" id="movementDate" class="form-control" required></div>
+            <div class="form-group"><label for="movementAmount">Valor (R$)</label><input type="number" id="movementAmount" class="form-control" min="0.01" step="0.01" required></div>
+            <div class="form-group movement-notes-group"><label for="movementNotes">Observação</label><input type="text" id="movementNotes" class="form-control" maxlength="500" placeholder="Opcional"></div>
+            <label class="movement-balance-check"><input type="checkbox" id="movementBalanceIncludes" checked><span>Este valor já está refletido no saldo do ativo</span></label>
+            <button type="submit" class="btn btn-primary">Registrar movimentação</button>
+            <p class="movement-form-help">Se registrar aporte ou resgate aqui, não repita o mesmo valor no campo de movimentação do saldo diário.</p>
+          </form>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead><tr><th>Data</th><th>Ativo</th><th>Tipo</th><th>Valor</th><th>Observação</th><th></th></tr></thead>
+              <tbody id="tableMovements"><tr><td colspan="6" class="empty-state">Nenhuma movimentação registrada.</td></tr></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <!-- TAB 5: INVESTMENTS & MATURITY -->
+      <section id="tab-investments" class="tab-pane">
+        <div id="walletListView" class="wallet-list-view">
+        <div class="panel-header-simple">
+          <div>
+            <h2>Carteira</h2>
+            <p>Seus investimentos em um só lugar</p>
+          </div>
+          <button class="btn btn-primary" onclick="openInvestmentModal()">
+            + Cadastrar Novo Ativo
+          </button>
+        </div>
+
+        <section class="wallet-portfolio" aria-labelledby="walletPortfolioTitle">
+          <div class="wallet-portfolio-head">
+            <div class="wallet-brand-title">
+              <img src="/brand/svg/lastro-symbol-color.svg" alt="" />
+              <div><span>Lastro.app</span><h2 id="walletPortfolioTitle">Seu portfólio</h2></div>
+            </div>
+            <span id="walletAssetCount" class="wallet-asset-count">Carregando ativos</span>
+          </div>
+          <div class="wallet-portfolio-total" id="walletTotal">Sem dados ainda</div>
+          <div class="wallet-profit-line">
+            <strong id="walletProfit">—</strong>
+            <span id="walletProfitPct">Rendimento acumulado</span>
+          </div>
+          <div class="wallet-chart-heading">
+            <span>Evolução do patrimônio</span>
+            <div class="wallet-period-switcher" role="group" aria-label="Período do gráfico do portfólio">
+              <button type="button" class="active" data-wallet-range="all">Tudo</button>
+              <button type="button" data-wallet-range="30">30d</button>
+              <button type="button" data-wallet-range="6m">6m</button>
+              <button type="button" data-wallet-range="1y">1a</button>
+            </div>
+          </div>
+          <div class="wallet-chart-wrap">
+            <canvas id="chartPortfolioValue" aria-label="Evolução do patrimônio investido ao longo do tempo"></canvas>
+            <div id="portfolioValueTooltip" class="chart-tooltip" hidden></div>
+          </div>
+          <p id="walletChartNote" class="wallet-chart-note">A evolução considera os saldos registrados.</p>
+        </section>
+
+        <section class="wallet-concentration-panel" aria-labelledby="walletConcentrationTitle">
+          <div class="wallet-concentration-header"><div><h3 id="walletConcentrationTitle">Onde está seu patrimônio</h3><span>Distribuição dos saldos líquidos cadastrados</span></div></div>
+          <div id="walletConcentration" class="wallet-concentration-grid"></div>
+        </section>
+
+        <section class="maturity-schedule" aria-labelledby="maturityScheduleTitle">
+          <div class="maturity-schedule-header">
+            <h3 id="maturityScheduleTitle">Próximos vencimentos</h3>
+            <span>Ativos com data cadastrada</span>
+          </div>
+          <div id="maturityScheduleList" class="maturity-schedule-list"></div>
+        </section>
+
+        <div class="wallet-assets-heading">
+          <div><h3>Seus ativos</h3><span>Saldo, rentabilidade e vencimento</span></div>
+          <div class="wallet-assets-tools">
+            <span id="walletListCount"></span>
+            <div class="wallet-group-switcher" role="group" aria-label="Organizar ativos da carteira">
+              <button type="button" class="active" aria-pressed="true" data-wallet-group="all">Todos</button>
+              <button type="button" aria-pressed="false" data-wallet-group="institution">Por instituição</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="investments-grid" id="investmentsCardsContainer">
+          <!-- Investment cards inserted here -->
+        </div>
+        </div>
+
+        <section id="assetDetailView" class="asset-detail-view" hidden>
+          <div class="asset-detail-header">
+            <button type="button" class="btn btn-secondary btn-sm" id="btnBackToWallet">
+              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path><path d="M9 12h12"></path></svg>
+              Carteira
+            </button>
+            <div class="asset-detail-title">
+              <span class="eyebrow"><img src="/brand/svg/lastro-symbol-color.svg" alt="">Detalhes do ativo</span>
+              <h2 id="assetDetailName">Ativo</h2>
+              <p id="assetDetailSubtitle"></p>
+            </div>
+          </div>
+
+          <div class="asset-detail-metrics">
+            <div><span>Saldo líquido</span><strong id="assetDetailBalance" class="currency-sensitive">—</strong><small id="assetDetailBalanceDate">Sem saldo registrado</small></div>
+            <div><span>Rendimento líquido</span><strong id="assetDetailProfit" class="currency-sensitive">—</strong><small id="assetDetailProfitPct">Acumulado</small></div>
+            <div class="asset-detail-cdi"><span>Comparação com CDI</span><strong id="assetDetailCdi">—</strong><small id="assetDetailCdiTarget">Meta contratada</small><div class="progress-track"><div class="progress-bar" id="assetDetailCdiProgress"></div></div></div>
+          </div>
+
+          <section class="asset-history-panel">
+            <div class="asset-section-heading">
+              <div><h3>Histórico do saldo</h3><span id="assetHistoryNote">Saldos líquidos registrados</span></div>
+              <div class="asset-period-switcher" role="group" aria-label="Período do histórico do ativo">
+                <button type="button" class="active" data-asset-range="all">Tudo</button>
+                <button type="button" data-asset-range="30">30d</button>
+                <button type="button" data-asset-range="6m">6m</button>
+                <button type="button" data-asset-range="1y">1a</button>
+              </div>
+            </div>
+            <div class="asset-history-chart-wrap">
+              <canvas id="chartAssetBalance" aria-label="Histórico de saldo do ativo"></canvas>
+              <div id="assetBalanceTooltip" class="chart-tooltip" hidden></div>
+            </div>
+            <div id="assetHistoryRecords" class="asset-history-records"></div>
+          </section>
+
+          <section class="asset-detail-specs">
+            <div><span>Imposto de renda</span><strong id="assetDetailTax">—</strong></div>
+            <div><span>Liquidez</span><strong id="assetDetailLiquidity">—</strong></div>
+            <div><span>Vencimento</span><strong id="assetDetailMaturity">—</strong></div>
+            <div><span>Meta contratada</span><strong id="assetDetailTarget">—</strong></div>
+            <div><span>Instituição</span><strong id="assetDetailInstitution">—</strong></div>
+            <div><span>Categoria</span><strong id="assetDetailCategory">—</strong></div>
+          </section>
+        </section>
+      </section>
+
+      <!-- TAB 6: BACKUP & CONFIG -->
+      <section id="tab-planning" class="tab-pane" aria-label="Planejamento"></section>
+
+      <section id="tab-backup" class="tab-pane">
+        <div class="backup-grid">
+          <div class="panel-card profile-settings-card">
+            <h3>Personalizar início</h3>
+            <p>Seu nome aparece na saudação do painel.</p>
+            <form id="formProfileName" class="profile-name-form">
+              <div class="form-group">
+                <label for="settingUserName">Como podemos chamar você?</label>
+                <input type="text" id="settingUserName" class="form-control" maxlength="40" autocomplete="given-name" placeholder="Seu nome" />
+              </div>
+              <button class="btn btn-primary" type="submit">Salvar nome</button>
+            </form>
+          </div>
+
+          <div class="panel-card">
+            <h3>Exportar Backup Completo</h3>
+            <p>Baixe todos os seus dados em formato JSON. Você pode guardá-lo como cópia de segurança.</p>
+            <div style="margin-top: 1.5rem;">
+              <a href="/api/export" class="btn btn-primary" download>
+                Baixar Backup (JSON)
+              </a>
+            </div>
+          </div>
+
+          <div class="panel-card">
+            <h3>Restaurar Backup</h3>
+            <p>Selecione um arquivo de backup previamente exportado para restaurar investimentos e lançamentos.</p>
+            <div style="margin-top: 1.5rem;">
+              <input type="file" id="fileImportInput" accept=".json" style="display: none;" />
+              <button class="btn btn-secondary" onclick="document.getElementById('fileImportInput').click()">
+                Selecionar Arquivo JSON
+              </button>
+            </div>
+          </div>
+
+          <div class="panel-card">
+            <h3>Carregar Dados de Demonstração</h3>
+            <p>Insira dados de teste simulados (CDB Inter 102%, Tesouro Selic e LCI IPCA com datas de vencimento) para experimentar o sistema.</p>
+            <div style="margin-top: 1.5rem;">
+              <button class="btn btn-secondary" id="btnLoadDemoData">
+                Inserir Exemplos
+              </button>
+            </div>
+          </div>
+          <div class="panel-card recovery-card">
+            <div class="recovery-panel-header"><div><h3>Itens excluídos</h3><p>Recupere ativos, saldos ou movimentações removidas.</p></div><button type="button" class="btn btn-secondary btn-sm" id="btnRefreshDeleted">Atualizar</button></div>
+            <div id="deletedItemsList" class="recovery-list"><p class="text-muted">Carregando itens…</p></div>
+          </div>
+          <div class="panel-card recovery-card">
+            <div class="recovery-panel-header"><div><h3>Atividade recente</h3><p>Criações, alterações, recebimentos, exclusões e restaurações.</p></div><button type="button" class="btn btn-secondary btn-sm" id="btnRefreshActivity">Atualizar</button></div>
+            <div id="activityLogList" class="recovery-list"><p class="text-muted">Carregando atividade…</p></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- MODAL: Editar Saldo em Dólar -->
+  <div id="modalUsd" class="modal-overlay hidden">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Saldo em Dólar (USD)</h3>
+        <button class="modal-close" onclick="closeUsdModal()">&times;</button>
+      </div>
+      <form id="formUsd">
+        <div class="form-group">
+          <label for="inputUsdAmount">Quantia em Dólar (US$)</label>
+          <input type="number" step="0.01" id="inputUsdAmount" class="form-control" placeholder="1000.00" required />
+          <small class="form-help">Informe o valor em dólares que você possui (em conta internacional, corretora ou dinheiro)</small>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeUsdModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar Saldo em Dólar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Configurar Meta e Taxa CDI -->
+  <div id="modalSettings" class="modal-overlay hidden">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Meta de Patrimônio e Taxa CDI</h3>
+        <button class="modal-close" onclick="closeSettingsModal()">&times;</button>
+      </div>
+      <form id="formSettings">
+        <div class="form-group">
+          <label for="settingPatrimonyGoal">Sua Meta de Patrimônio (R$)</label>
+          <input type="number" step="1000" id="settingPatrimonyGoal" class="form-control" placeholder="100000" required />
+          <small class="form-help">Ex: 100000 para R$ 100.000,00</small>
+        </div>
+        <div class="form-group">
+          <label for="settingCdiRate">Taxa CDI de Referência Anual (% a.a.)</label>
+          <input type="number" step="0.01" id="settingCdiRate" class="form-control" placeholder="10.75" required />
+          <small class="form-help">Utilizada para calcular se seus CDBs/LCIs estão entregando o CDI contratado</small>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeSettingsModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar Configurações</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Cadastrar / Editar Investimento -->
+  <div id="modalInvestment" class="modal-overlay hidden">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="modalInvTitle">Novo Ativo</h3>
+        <button class="modal-close" onclick="closeInvestmentModal()">&times;</button>
+      </div>
+      <form id="formInvestment">
+        <input type="hidden" id="invId" />
+        <div class="form-group">
+          <label for="invName">Nome do Ativo / Investimento *</label>
+          <input type="text" id="invName" class="form-control" placeholder="Ex: CDB Inter 102% CDI, Tesouro Selic 2029" required />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="invInstitution">Instituição / Banco</label>
+            <input type="text" id="invInstitution" class="form-control" placeholder="Ex: Banco Inter, Nubank, XP" />
+          </div>
+          <div class="form-group">
+            <label for="invCategory">Tipo / Categoria</label>
+            <select id="invCategory" class="form-control">
+              <option value="CDB / RDB">CDB / RDB</option>
+              <option value="Tesouro Direto">Tesouro Direto</option>
+              <option value="LCI / LCA">LCI / LCA (Isento IR)</option>
+              <option value="Caixinha / Reserva">Caixinha / Reserva</option>
+              <option value="Fundos">Fundos de Investimento</option>
+              <option value="Ações / FIIs">Ações / FIIs</option>
+              <option value="Renda Fixa">Renda Fixa Geral</option>
+              <option value="Outros">Outros</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="invTargetCdi">Meta % do CDI Contratada</label>
+            <input type="number" step="0.1" id="invTargetCdi" class="form-control" placeholder="100" value="100" />
+            <small class="form-help">Ex: 100 para 100% CDI, 102 para 102%</small>
+          </div>
+          <div class="form-group">
+            <label for="invLiquidity">Liquidez / Resgate</label>
+            <select id="invLiquidity" class="form-control">
+              <option value="Diária">Diária (D+0)</option>
+              <option value="D+1">D+1</option>
+              <option value="No Vencimento">No Vencimento</option>
+              <option value="Carência">Com Carência</option>
+            </select>
+          </div>
+        </div>
+        <label class="checkbox-label tax-exempt-option" for="invTaxExempt">
+          <input type="checkbox" id="invTaxExempt" />
+          <span>Isento de Imposto de Renda</span>
+        </label>
+        <div class="form-group">
+          <label for="invMaturityDate">Data de Vencimento (Opcional)</label>
+          <input type="date" id="invMaturityDate" class="form-control" />
+          <small class="form-help">Você receberá aviso quando faltar menos de 30 dias para vencer</small>
+        </div>
+        <div class="form-group">
+          <label for="invNotes">Observações (Opcional)</label>
+          <input type="text" id="invNotes" class="form-control" placeholder="Ex: Taxa prefixada, carência de 90 dias" />
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeInvestmentModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar Ativo</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Lançamento Manual -->
+  <div id="modalSingleEntry" class="modal-overlay hidden">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Lançamento de Saldo</h3>
+        <button class="modal-close" onclick="closeSingleEntryModal()">&times;</button>
+      </div>
+      <form id="formSingleEntry">
+        <div class="form-group">
+          <label for="singleEntryInv">Investimento *</label>
+          <select id="singleEntryInv" class="form-control" required></select>
+        </div>
+        <div class="form-group">
+          <label for="singleEntryDate">Data do Saldo *</label>
+          <input type="date" id="singleEntryDate" class="form-control" required />
+        </div>
+        <div class="form-row">
+          <div class="form-group" id="singleEntryGrossGroup">
+            <label for="singleEntryGross">Valor Bruto (R$) *</label>
+            <input type="number" step="0.01" id="singleEntryGross" class="form-control" placeholder="0.00" required />
+          </div>
+          <div class="form-group" id="singleEntryNetGroup">
+            <label for="singleEntryNet">Valor Líquido (R$) *</label>
+            <input type="number" step="0.01" id="singleEntryNet" class="form-control" placeholder="0.00" required />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="singleEntryContribution">Aporte no dia (R$)</label>
+            <input type="number" step="0.01" id="singleEntryContribution" class="form-control" placeholder="0.00" />
+            <small class="form-help">Não conta como lucro</small>
+          </div>
+          <div class="form-group">
+            <label for="singleEntryWithdrawal">Resgate no dia (R$)</label>
+            <input type="number" step="0.01" id="singleEntryWithdrawal" class="form-control" placeholder="0.00" />
+            <small class="form-help">Se retirou dinheiro hoje</small>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="singleEntryNotes">Observação</label>
+          <input type="text" id="singleEntryNotes" class="form-control" placeholder="Ex: Saldo após fechamento do dia" />
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeSingleEntryModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar Lançamento</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.addEventListener('controllerchange', () => window.location.reload());
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' })
+          .then((registration) => registration.update())
+          .catch((error) => console.error('Falha ao atualizar o app:', error));
+      });
+    }
+  </script>
+</body>
+</html>

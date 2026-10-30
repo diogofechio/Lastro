@@ -1,0 +1,44 @@
+{
+  "name": "controle-rendimentos-investimentos",
+  "version": "1.0.0",
+  "description": "Controle diário de rendimentos de investimentos (Bruto e Líquido)",
+  "main": "desktop/main.js",
+  "type": "module",
+  "scripts": {
+    "start": "electron .",
+    "start:web": "node server.js",
+    "dist": "electron-builder --win"
+  },
+  "keywords": [
+    "investimentos",
+    "rendimento",
+    "financas"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^45.1.0",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "app.lastro.controle",
+    "productName": "Lastro.app",
+    "files": [
+      "desktop/**/*",
+      "public/**/*",
+      "server.js",
+      "package.json"
+    ],
+    "win": {
+      "icon": "public/icon-512.png",
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  }
+}
+
