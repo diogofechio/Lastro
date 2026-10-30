@@ -9,10 +9,51 @@ const __dirname = path.dirname(__filename);
 
 const PORT = process.env.PORT || 3000;
 const DB_PATH = process.env.LASTRO_DB_PATH || path.join(__dirname, 'data', 'rendimentos.db');
+const DEFAULT_ANNUAL_CDI_RATE = 13.65;
+const DEFAULT_CDI_RATE_DATE = '2026-10-29';
+const CDI_SGS_URL = 'https://api.bcb.gov.br/dados/serie/bcdata.sgs.4389/dados/ultimos/1?formato=json';
+const CDI_REFRESH_INTERVAL_MS = 6 * 60 * 60 * 1000;
 fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
 
 const db = new DatabaseSync(DB_PATH);
 let externalFetch = globalThis.fetch;
+let cdiLastCheckedAt = 0;
+let cdiRefreshPromise = null;
+
+async function refreshAnnualCdiRate() {
+  if (cdiRefreshPromise) return cdiRefreshPromise.catch(() => {});
+  if (Date.now() - cdiLastCheckedAt < CDI_REFRESH_INTERVAL_MS) return;
+  cdiLastCheckedAt = Date.now();
+
+  cdiRefreshPromise = (async () => {
+    const response = await externalFetch(CDI_SGS_URL, {
+      headers: { Accept: 'application/json' },
+      signal: AbortSignal.timeout(6000)
+    });
+    if (!response.ok) throw new Error(`Banco Central respondeu ${response.status} ao consultar o CDI.`);
+
+    const rows = await response.json();
+    const latest = Array.isArray(rows) ? rows.at(-1) : null;
+    const value = Number(String(latest?.valor ?? '').replace(',', '.'));
+    const match = String(latest?.data ?? '').match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    if (!Number.isFinite(value) || value <= 0 || !match) throw new Error('Resposta inválida da série CDI 4389.');
+
+    const [, day, month, year] = match;
+    const referenceDate = `${year}-${month}-${day}`;
+    if (!isValidIsoDate(referenceDate)) throw new Error('Data inválida na série CDI 4389.');
+
+    setSetting('annual_cdi_rate', value.toFixed(2));
+    setSetting('annual_cdi_rate_date', referenceDate);
+  })();
+
+  try {
+    await cdiRefreshPromise;
+  } catch {
+    // Keep the last stored reference if the user is offline or the BCB API is unavailable.
+  } finally {
+    cdiRefreshPromise = null;
+  }
+}
 
 // Initial tables
 db.exec(`
@@ -157,7 +198,10 @@ if (!getSetting('patrimony_goal', null)) {
   setSetting('patrimony_goal', '100000');
 }
 if (!getSetting('annual_cdi_rate', null)) {
-  setSetting('annual_cdi_rate', '10.75'); // Taxa CDI padrão atual
+  setSetting('annual_cdi_rate', DEFAULT_ANNUAL_CDI_RATE);
+}
+if (!getSetting('annual_cdi_rate_date', null)) {
+  setSetting('annual_cdi_rate_date', DEFAULT_CDI_RATE_DATE);
 }
 if (!getSetting('usd_amount', null)) {
   setSetting('usd_amount', '0');
@@ -225,7 +269,7 @@ function countBusinessDays(startDateStr, endDateStr) {
 
 // Calculate Analytics
 function calculateAnalytics(investmentId = null) {
-  const annualCDI = parseFloat(getSetting('annual_cdi_rate', '10.75')) || 10.75;
+  const annualCDI = parseFloat(getSetting('annual_cdi_rate', String(DEFAULT_ANNUAL_CDI_RATE))) || DEFAULT_ANNUAL_CDI_RATE;
   const patrimonyGoal = parseFloat(getSetting('patrimony_goal', '100000')) || 100000;
   
   // Daily CDI rate: (1 + CDI)^(1/252) - 1
@@ -563,6 +607,7 @@ function calculateAnalytics(investmentId = null) {
 
       // Benchmark CDI
       annual_cdi_rate: annualCDI,
+      annual_cdi_rate_date: getSetting('annual_cdi_rate_date', DEFAULT_CDI_RATE_DATE),
 
       // Dólar
       usd_amount: parseFloat(getSetting('usd_amount', '0')) || 0,
@@ -612,7 +657,6 @@ const server = http.createServer(async (req, res) => {
       if (method === 'POST') {
         const data = await parseJsonBody(req);
         if (data.patrimony_goal !== undefined) { setSetting('patrimony_goal', data.patrimony_goal); logActivity('settings', null, 'updated', 'Meta de patrimônio'); }
-        if (data.annual_cdi_rate !== undefined) { setSetting('annual_cdi_rate', data.annual_cdi_rate); logActivity('settings', null, 'updated', 'Taxa CDI de referência'); }
         if (data.usd_amount !== undefined) { setSetting('usd_amount', data.usd_amount); logActivity('settings', null, 'updated', 'Reserva em dólar'); }
         if (data.include_usd_in_patrimony !== undefined) { setSetting('include_usd_in_patrimony', String(data.include_usd_in_patrimony)); logActivity('settings', null, 'updated', 'Inclusão da reserva em dólar'); }
         if (data.user_name !== undefined) { setSetting('user_name', String(data.user_name).trim().slice(0, 40)); logActivity('profile', null, 'updated', 'Saudação personalizada'); }
@@ -1040,6 +1084,7 @@ const server = http.createServer(async (req, res) => {
 
     // API: Analytics
     if (pathname === '/api/analytics' && method === 'GET') {
+      await refreshAnnualCdiRate();
       const invId = parsedUrl.searchParams.get('investment_id');
       const analytics = calculateAnalytics(invId ? parseInt(invId, 10) : null);
       return sendJson(res, 200, analytics);
@@ -1195,7 +1240,6 @@ const server = http.createServer(async (req, res) => {
       if (Array.isArray(data.settings)) {
         const allowedSettings = new Set([
           'patrimony_goal',
-          'annual_cdi_rate',
           'usd_amount',
           'include_usd_in_patrimony',
           'user_name'

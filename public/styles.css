@@ -1901,7 +1901,6 @@ button:not(:disabled):active { transform: translateY(0) scale(.97); transition-d
 .text-danger { color: #d98b8b !important; }
 .activity-row { justify-content: start; }
 .activity-dot { width: 6px; height: 6px; flex: 0 0 6px; border-radius: 50%; background: #6f91d4; }
-.compact-view-button { display: inline-flex; align-items: center; gap: 7px; }
 @keyframes feature-row-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 @media (max-width: 1050px) {
   .dashboard-followups { grid-template-columns: minmax(0,1fr); }
@@ -1925,7 +1924,6 @@ button:not(:disabled):active { transform: translateY(0) scale(.97); transition-d
   .movement-form > .btn { grid-column: 1 / -1; justify-self: start; }
   .recovery-row { align-items: flex-start; flex-direction: column; }
   .recovery-actions { align-self: end; }
-  .compact-view-button span { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .calendar-event, .calendar-event-form, .calendar-receipt-form, .scenario-result, .recovery-row, .activity-row { animation-duration: .01ms; }

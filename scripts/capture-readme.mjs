@@ -9,7 +9,12 @@ import { pathToFileURL } from 'node:url';
 process.env.LASTRO_DB_PATH = ':memory:';
 const { startServer } = await import(pathToFileURL(path.resolve('server.js')));
 const { server, url } = await startServer(0, '127.0.0.1', {
-  fetch: async () => new Response('Unavailable in screenshot fixture', { status: 503 })
+  fetch: async source => /bcdata\.sgs\.4389/.test(String(source))
+    ? new Response(JSON.stringify([{ data: '29/10/2026', valor: '13,65' }]), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    })
+    : new Response('Unavailable in screenshot fixture', { status: 503 })
 });
 
 const chromePath = path.join(process.env.ProgramFiles, 'Google', 'Chrome', 'Application', 'chrome.exe');

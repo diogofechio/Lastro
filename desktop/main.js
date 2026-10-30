@@ -1,9 +1,8 @@
-import { app, BrowserWindow, ipcMain, net, shell } from 'electron';
+import { app, BrowserWindow, net, shell } from 'electron';
 import fs from 'node:fs';
 import path from 'node:path';
 
 let mainWindow;
-let compactWindow;
 let localServer;
 let localUrl;
 
@@ -30,21 +29,6 @@ if (!app.requestSingleInstanceLock()) {
       const started = await startServer(0, '127.0.0.1', { fetch: net.fetch.bind(net) });
       localServer = started.server;
       localUrl = started.url;
-      ipcMain.handle('lastro:open-compact', () => openCompactWindow());
-      ipcMain.handle('lastro:open-main', () => {
-        if (!mainWindow || mainWindow.isDestroyed()) {
-          createWindow();
-          return true;
-        }
-        if (mainWindow.isMinimized()) mainWindow.restore();
-        mainWindow.show();
-        mainWindow.focus();
-        return true;
-      });
-      ipcMain.handle('lastro:close-compact', event => {
-        const owner = BrowserWindow.fromWebContents(event.sender);
-        if (owner === compactWindow) owner.close();
-      });
       createWindow();
     } catch (error) {
       console.error('Não foi possível iniciar o Lastro.app:', error);
@@ -70,7 +54,6 @@ function createWindow() {
     title: 'Lastro.app',
     icon: path.join(app.getAppPath(), 'public', 'favicon.ico'),
     webPreferences: {
-      preload: path.join(app.getAppPath(), 'desktop', 'preload.cjs'),
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true
@@ -90,36 +73,4 @@ function createWindow() {
   });
   mainWindow.on('closed', () => { mainWindow = null; });
   mainWindow.loadURL(localUrl);
-}
-
-function openCompactWindow() {
-  if (compactWindow && !compactWindow.isDestroyed()) {
-    if (compactWindow.isMinimized()) compactWindow.restore();
-    compactWindow.show();
-    compactWindow.focus();
-    return true;
-  }
-  compactWindow = new BrowserWindow({
-    width: 420,
-    height: 620,
-    minWidth: 360,
-    minHeight: 480,
-    show: false,
-    alwaysOnTop: true,
-    autoHideMenuBar: true,
-    backgroundColor: '#0B1220',
-    title: 'Lastro · Visão rápida',
-    icon: path.join(app.getAppPath(), 'public', 'favicon.ico'),
-    webPreferences: {
-      preload: path.join(app.getAppPath(), 'desktop', 'preload.cjs'),
-      contextIsolation: true,
-      nodeIntegration: false,
-      sandbox: true
-    }
-  });
-  compactWindow.once('ready-to-show', () => compactWindow?.show());
-  compactWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
-  compactWindow.on('closed', () => { compactWindow = null; });
-  compactWindow.loadURL(new URL('/compact.html', localUrl).href);
-  return true;
 }

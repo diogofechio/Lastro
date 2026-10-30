@@ -11,6 +11,11 @@ process.env.LASTRO_DB_PATH = ':memory:';
 const { startServer } = await import(pathToFileURL(path.resolve('server.js')));
 const { server, url } = await startServer(0, '127.0.0.1', {
   fetch: async source => {
+    if (/bcdata\.sgs\.4389/.test(String(source))) {
+      return new Response(JSON.stringify([{ data: '29/10/2026', valor: '13,65' }]), {
+        status: 200, headers: { 'Content-Type': 'application/json' }
+      });
+    }
     assert.match(String(source), /bcdata\.sgs\.433/);
     return new Response(JSON.stringify([
       { data: '01/08/2026', valor: '-0.32' },
@@ -165,8 +170,8 @@ try {
   assert.equal(ipcaSyncResult.latest_month, '2026-09');
   const cachedIpca = await (await fetch(url + '/api/inflation')).json();
   assert.deepEqual(cachedIpca.map(item => [item.reference_month, item.rate]), [['2026-08', -0.32], ['2026-09', 0.82]]);
-  assert.match(await (await fetch(url + '/compact.html')).text(), /Próximos eventos/);
-  record('ativo apagado restaura saldo e os serviços de IPCA e visão rápida respondem');
+  assert.equal((await fetch(url + '/compact.html')).status, 404);
+  record('ativo apagado restaura saldo e o serviço de IPCA responde');
   await fetch(url + `/api/investments/${featureInvestment.id}`, { method: 'DELETE' });
   await fetch(url + `/api/investments/${restoredInvestment.id}`, { method: 'DELETE' });
 
@@ -227,8 +232,9 @@ try {
   const taxExemptInvestment = (await (await fetch(url + '/api/investments')).json()).find(item => item.name === 'Ativo isento');
   record('cadastro de ativo com isenção de IR');
   await cdp.click('#btnEditGoalDirect');
-  await cdp.run(`document.getElementById('settingPatrimonyGoal').value='50000';document.getElementById('settingCdiRate').value='10.75';document.getElementById('formSettings').requestSubmit()`);
+  await cdp.run(`document.getElementById('settingPatrimonyGoal').value='50000';document.getElementById('formSettings').requestSubmit()`);
   await waitFor(() => cdp.run(`document.getElementById('modalSettings').classList.contains('hidden')`), 'settings save');
+  assert.equal(await cdp.run(`document.getElementById('settingCdiRate').readOnly&&document.getElementById('cdiRateBadge').textContent.includes('13,65')`), true, 'CDI reference is automatic and read-only');
 
   await cdp.click('#btnEditUsdAmount');
   await cdp.run(`document.getElementById('inputUsdAmount').value='100';document.getElementById('formUsd').requestSubmit()`);
@@ -410,13 +416,12 @@ try {
   await cdp.click('.nav-item[data-tab="planning"]');
   await waitFor(() => cdp.run(`document.getElementById('tab-planning').classList.contains('active')&&document.querySelectorAll('#scenarioResults .scenario-result').length===3`), 'scenario projections');
   assert.equal(await cdp.run(`!document.querySelector('#tab-dashboard .dashboard-followups')`), true, 'scenario and calendar no longer occupy the home tab');
-  await cdp.run(`window.lastroDesktop={openCompactWindow:()=>window.__compactOpened=true};document.getElementById('scenarioMonthlyContribution').value='600';document.getElementById('scenarioMonthlyContribution').dispatchEvent(new Event('input',{bubbles:true}))`);
+  await cdp.run(`document.getElementById('scenarioMonthlyContribution').value='600';document.getElementById('scenarioMonthlyContribution').dispatchEvent(new Event('input',{bubbles:true}))`);
   assert.equal(await cdp.run(`document.getElementById('scenarioResults').textContent.includes('Otimista')&&document.getElementById('scenarioResults').textContent.includes('Base')`), true, 'scenario model renders three named outcomes');
-  await cdp.click('#btnOpenCompactView');
-  assert.equal(await cdp.run(`window.__compactOpened===true`), true, 'desktop quick-view action is connected');
+  assert.equal(await cdp.run(`!document.getElementById('btnOpenCompactView')&&!window.lastroDesktop`), true, 'quick view feature is removed from the app');
   const syntheticRates = await cdp.run(`state.ipcaRates=[{reference_month:'2026-10',rate:1}];state.performanceRange='all';updatePeriodPerformance();document.getElementById('performanceRealReturn').textContent`);
   assert.notEqual(syntheticRates, 'â€”', 'real return compares portfolio results with monthly IPCA');
-  record('simulador, visão rápida e rendimento acima do IPCA');
+  record('simulador, CDI automático e rendimento acima do IPCA');
 
   await cdp.run(`(()=>{const select=document.getElementById('calendarInvestment');const option=[...select.options].find(item=>item.textContent.includes('Carteira inicial'));if(!option)throw Error('Test investment not available');select.value=option.value;document.getElementById('calendarType').value='dividend';document.getElementById('calendarDate').value='2026-11-15';document.getElementById('calendarAmount').value='12';document.getElementById('calendarTitle').value='Dividendo interface';document.getElementById('formCalendarEvent').requestSubmit()})()`);
   await waitFor(async () => (await (await fetch(url + '/api/calendar')).json()).some(item => item.title === 'Dividendo interface' && item.status === 'expected'), 'calendar event created through UI');
@@ -445,10 +450,7 @@ try {
   assert.ok(fullBackup.activity_log.length > 0);
   record('histórico, recuperação e backup incluem movimentos, agenda e atividade');
 
-  await cdp.send('Page.navigate', { url: `${url}/compact.html` });
-  await waitFor(() => cdp.run(`document.title.includes('Visão rápida')&&document.getElementById('compactTotal').textContent.includes('R$')`), 'compact quick-view loads local totals');
-  assert.equal(await cdp.run(`document.getElementById('compactEvents').textContent.length>0`), true, 'compact view displays next events or a clear empty state');
-  record('painel compacto local carrega patrimônio e agenda');
+  assert.equal((await fetch(url + '/compact.html')).status, 404, 'removed quick-view page is not served');
 
   await new Promise(resolve => setTimeout(resolve, 300));
   assert.deepEqual(errors, [], `Browser errors: ${JSON.stringify(errors)}`);

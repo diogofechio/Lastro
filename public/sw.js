@@ -1,8 +1,7 @@
-const CACHE_NAME = 'lastro-app-v5';
+const CACHE_NAME = 'lastro-app-v6';
 const APP_SHELL = [
   '/',
   '/index.html',
-  '/compact.html',
   '/styles.css',
   '/app.js',
   '/manifest.json',

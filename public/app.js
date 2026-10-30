@@ -517,9 +517,11 @@ async function loadDashboardData() {
     // Taxa CDI
     const cdiRateEl = document.getElementById('cdiRateBadge');
     if (cdiRateEl) {
-      const cdiVal = parseFloat(s.annual_cdi_rate) || 10.75;
+      const cdiVal = parseFloat(s.annual_cdi_rate) || 13.65;
       cdiRateEl.textContent = `${cdiVal.toFixed(2).replace('.', ',')}% a.a.`;
     }
+    const cdiUpdatedEl = document.getElementById('cdiRateUpdatedAt');
+    if (cdiUpdatedEl) cdiUpdatedEl.textContent = s.annual_cdi_rate_date ? ` · Banco Central, ${formatDateBR(s.annual_cdi_rate_date)}` : ' · aguardando atualização';
 
     const dateEl = document.getElementById('kpiLatestDate');
     if (dateEl) {
@@ -691,7 +693,7 @@ function updatePeriodPerformance(analytics = state.analytics) {
 
   const returnPct = weightedCapital > 0 ? (periodYield / weightedCapital) * 100 : 0;
   const summary = analytics?.summary || {};
-  const cdiRate = Number(summary.annual_cdi_rate) || 10.75;
+  const cdiRate = Number(summary.annual_cdi_rate) || 13.65;
   const businessDays = businessDaysBetween(startDate, end);
   const benchmarkPct = (Math.pow(1 + cdiRate / 100, 1 / 252) ** businessDays - 1) * 100;
   const cdiDelivery = benchmarkPct > 0 ? (returnPct / benchmarkPct) * 100 : null;
@@ -2387,7 +2389,7 @@ async function handleSingleEntrySubmit(e) {
 // Settings Modal
 async function openSettingsModal() {
   let goal = 100000;
-  let cdi = 10.75;
+  let cdi = 13.65;
 
   if (state.analytics && state.analytics.summary) {
     goal = state.analytics.summary.patrimony_goal || goal;
@@ -2396,6 +2398,7 @@ async function openSettingsModal() {
 
   const goalInput = document.getElementById('settingPatrimonyGoal');
   const cdiInput = document.getElementById('settingCdiRate');
+  const cdiDate = document.getElementById('settingCdiRateUpdatedAt');
   if (goalInput) goalInput.value = goal;
   if (cdiInput) cdiInput.value = cdi;
 
@@ -2407,6 +2410,9 @@ async function openSettingsModal() {
     const settings = await res.json();
     if (settings.patrimony_goal && goalInput) goalInput.value = settings.patrimony_goal;
     if (settings.annual_cdi_rate && cdiInput) cdiInput.value = settings.annual_cdi_rate;
+    if (cdiDate) cdiDate.textContent = settings.annual_cdi_rate_date
+      ? `Atualizada pelo Banco Central em ${formatDateBR(settings.annual_cdi_rate_date)}. Se estiver sem internet, o último valor salvo continua sendo usado.`
+      : 'Aguardando a primeira atualização pelo Banco Central. Se estiver sem internet, o último valor salvo continua sendo usado.';
   } catch (err) {}
 }
 
@@ -2417,13 +2423,11 @@ function closeSettingsModal() {
 async function handleSettingsSubmit(e) {
   e.preventDefault();
   const patrimony_goal = parseFloat(document.getElementById('settingPatrimonyGoal').value);
-  const annual_cdi_rate = parseFloat(document.getElementById('settingCdiRate').value);
-
   try {
     const res = await fetch('/api/settings', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ patrimony_goal, annual_cdi_rate })
+      body: JSON.stringify({ patrimony_goal })
     });
     const result = await res.json();
     if (result.success) {
@@ -2835,10 +2839,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const purge = event.target.closest('[data-purge-item]');
     if (restore) restoreDeletedItem(restore.dataset.restoreItem);
     if (purge) permanentlyDeleteItem(purge.dataset.purgeItem);
-  });
-  document.getElementById('btnOpenCompactView').addEventListener('click', () => {
-    if (window.lastroDesktop?.openCompactWindow) window.lastroDesktop.openCompactWindow();
-    else window.open('/compact.html', 'lastro-compact', 'popup,width=420,height=620,resizable=yes');
   });
 
   document.addEventListener('keydown', (event) => {
