@@ -4,7 +4,7 @@
 
 # Lastro.app
 
-Aplicativo desktop para registrar saldos, acompanhar rendimentos e organizar uma carteira de investimentos. A versão Windows abre em uma janela própria do aplicativo, sem exigir Chrome ou outro navegador.
+Aplicativo para registrar saldos, acompanhar rendimentos e organizar uma carteira de investimentos. No Windows, você pode usar o instalador desktop ou abrir no navegador sem uma janela de terminal.
 
 > **Seus dados ficam no seu computador.** A carteira é armazenada em um banco SQLite local e não é enviada ao GitHub.
 
@@ -18,13 +18,13 @@ As capturas abaixo usam dados fictícios de demonstração.
 
 ## Baixar para Windows
 
-Baixe **Lastro.app Setup 1.0.5.exe** na seção **Releases**, execute o instalador e escolha a pasta de instalação. Ele cria atalhos no Menu Iniciar e na Área de Trabalho.
+Baixe **Lastro.app Setup 1.0.5.exe** na seção **Releases**, execute o instalador e escolha a pasta de instalação. Ele cria atalhos no Menu Iniciar e na Área de Trabalho. Esse instalador ainda não tem assinatura digital e pode ser bloqueado pelo Controle Inteligente de Aplicativos do Windows.
 
 O instalador abre uma janela desktop do Lastro.app; o usuário não precisa abrir Chrome ou outro navegador. O servidor local só atende o próprio aplicativo e é encerrado quando a janela é fechada.
 
 ## Seus dados e privacidade
 
-O app salva a carteira em `%APPDATA%\controle-rendimentos-investimentos\rendimentos.db` no Windows. Atualizar o aplicativo preserva esse banco. Faça backups em **Backup e Configurações** para proteger seus dados.
+O app salva a carteira em `%APPDATA%\controle-rendimentos-investimentos\rendimentos.db` no Windows. O atalho para navegador usa esse mesmo banco, preservando os dados existentes. Atualizar o aplicativo também preserva esse banco. Faça backups em **Backup e Configurações** para proteger seus dados.
 
 Os dados de demonstração exibidos nas imagens deste README são fictícios e não estão no banco do aplicativo.
 
@@ -65,9 +65,15 @@ npm install
 npm run dist
 ```
 
-O instalador NSIS é gerado em `dist/`. Para publicar a versão 1.0.5, crie a tag `v1.0.5` no GitHub e anexe `dist/Lastro.app Setup 1.0.5.exe` à **GitHub Release**. Não adicione o instalador ao histórico Git; publique-o como anexo da Release. O código-fonte e o `package-lock.json` permitem reproduzir a build.
+O instalador NSIS é gerado em `dist/` e usa a versão definida em `package.json` (1.0.6 neste código). Não adicione o instalador ao histórico Git; publique-o como anexo da **GitHub Release**. O instalador continua sendo o aplicativo desktop Electron. Para abrir no navegador sem terminal, use os atalhos VBS descritos abaixo.
 
-O instalador desta versão não tem assinatura digital. Por isso, o Windows ou um antivírus pode exibir um aviso de reputação ou uma detecção heurística. O aplicativo desktop não inicia PowerShell nem CMD. Caso um antivírus sinalize o instalador, envie o arquivo ao fornecedor para análise; não há como garantir que todo antivírus classifique um executável sem assinatura da mesma forma.
+O instalador desta versão não tem assinatura digital. Por isso, o Windows ou um antivírus pode exibir um aviso de reputação ou bloquear a execução. O aplicativo desktop não inicia PowerShell nem CMD. Caso um antivírus sinalize o instalador, envie o arquivo ao fornecedor para análise; não há como garantir que todo antivírus classifique um executável sem assinatura da mesma forma.
+
+## Abrir no navegador sem janela de terminal
+
+No Windows com Node.js 22.5 ou superior instalado, extraia o código-fonte completo e dê dois cliques em `Abrir Lastro.vbs`, na pasta principal do projeto. Ele inicia o servidor local oculto e abre o Lastro no navegador padrão. A janela preta do terminal não aparece. Esse atalho usa o mesmo banco local do instalador em `%APPDATA%\controle-rendimentos-investimentos\rendimentos.db`.
+
+Para encerrar o servidor sem afetar outros programas Node.js, dê dois cliques em `Fechar Lastro.vbs`. Depois, feche a aba do navegador. Fechar apenas a aba não encerra o servidor.
 
 ## Capturas do README
 
@@ -84,6 +90,8 @@ O comando salva as capturas em `docs/screenshots/` e usa um banco temporário em
 - `desktop/`: janela Electron, processo principal e ponte segura com a interface.
 - `public/`: interface, estilos, ícones necessários, manifesto PWA, service worker e logos usados na interface.
 - `scripts/tests/`: scripts de verificação usados durante o desenvolvimento.
+- `scripts/browser-launcher.mjs`: inicia o servidor local para usar o app no navegador sem terminal.
+- `Abrir Lastro.vbs` e `Fechar Lastro.vbs`: atalhos para iniciar e encerrar o servidor local oculto.
 - `scripts/capture-readme.mjs`: recria as capturas do README com dados fictícios.
 - `docs/screenshots/`: capturas de tela sem dados pessoais.
 - `server.js`: servidor local e acesso ao banco SQLite.

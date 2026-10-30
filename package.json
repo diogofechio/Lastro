@@ -1,6 +1,6 @@
 {
   "name": "controle-rendimentos-investimentos",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Controle diário de rendimentos de investimentos (Bruto e Líquido)",
   "main": "desktop/main.js",
   "type": "module",

@@ -1,4 +1,5 @@
 import http from 'node:http';
+import { timingSafeEqual } from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -642,6 +643,29 @@ const server = http.createServer(async (req, res) => {
     res.writeHead(204);
     res.end();
     return;
+  }
+
+  if (pathname === '/api/launcher/ping' || pathname === '/api/launcher/close') {
+    const launcherToken = process.env.LASTRO_BROWSER_LAUNCHER_TOKEN || '';
+    const suppliedToken = req.headers['x-lastro-launcher-token'];
+    const remoteAddress = req.socket.remoteAddress || '';
+    const isLoopback = remoteAddress === '127.0.0.1'
+      || remoteAddress === '::1'
+      || remoteAddress === '::ffff:127.0.0.1';
+    const expected = Buffer.from(launcherToken);
+    const supplied = Buffer.from(typeof suppliedToken === 'string' ? suppliedToken : '');
+    const authorized = launcherToken.length > 0 && isLoopback
+      && expected.length === supplied.length && timingSafeEqual(expected, supplied);
+
+    if (!authorized) return sendJson(res, 404, { error: 'Launcher local não encontrado.' });
+    if (pathname === '/api/launcher/ping' && method === 'GET') {
+      return sendJson(res, 200, { running: true });
+    }
+    if (pathname === '/api/launcher/close' && method === 'POST') {
+      sendJson(res, 200, { success: true });
+      setTimeout(() => server.close(), 250);
+      return;
+    }
   }
 
   try {
