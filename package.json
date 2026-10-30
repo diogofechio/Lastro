@@ -1,6 +1,6 @@
 {
   "name": "controle-rendimentos-investimentos",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Controle diário de rendimentos de investimentos (Bruto e Líquido)",
   "main": "desktop/main.js",
   "type": "module",
@@ -31,12 +31,14 @@
       "package.json"
     ],
     "win": {
-      "icon": "public/icon-512.png",
+      "icon": "public/icon.ico",
       "target": "nsis"
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
+      "installerIcon": "public/icon.ico",
+      "uninstallerIcon": "public/icon.ico",
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "runAfterFinish": true
