@@ -18,7 +18,7 @@ As capturas abaixo usam dados fictícios de demonstração.
 
 ## Baixar para Windows
 
-Baixe **Lastro.app Setup 1.0.3.exe** na seção **Releases**, execute o instalador e escolha a pasta de instalação. Ele cria atalhos no Menu Iniciar e na Área de Trabalho.
+Baixe **Lastro.app Setup 1.0.4.exe** na seção **Releases**, execute o instalador e escolha a pasta de instalação. Ele cria atalhos no Menu Iniciar e na Área de Trabalho.
 
 O instalador abre uma janela desktop do Lastro.app; o usuário não precisa abrir Chrome ou outro navegador. O servidor local só atende o próprio aplicativo e é encerrado quando a janela é fechada.
 
@@ -65,7 +65,7 @@ npm install
 npm run dist
 ```
 
-O instalador NSIS é gerado em `dist/`. Para publicar a versão 1.0.3, crie a tag `v1.0.3` no GitHub e anexe `dist/Lastro.app Setup 1.0.3.exe` à **GitHub Release**. Não adicione o instalador ao histórico Git; publique-o como anexo da Release. O código-fonte e o `package-lock.json` permitem reproduzir a build.
+O instalador NSIS é gerado em `dist/`. Para publicar a versão 1.0.4, crie a tag `v1.0.4` no GitHub e anexe `dist/Lastro.app Setup 1.0.4.exe` à **GitHub Release**. Não adicione o instalador ao histórico Git; publique-o como anexo da Release. O código-fonte e o `package-lock.json` permitem reproduzir a build.
 
 O instalador desta versão não tem assinatura digital. Por isso, o Windows ou um antivírus pode exibir um aviso de reputação ou uma detecção heurística. O aplicativo desktop não inicia PowerShell nem CMD. Caso um antivírus sinalize o instalador, envie o arquivo ao fornecedor para análise; não há como garantir que todo antivírus classifique um executável sem assinatura da mesma forma.
 
@@ -83,7 +83,6 @@ O comando salva as capturas em `docs/screenshots/` e usa um banco temporário em
 
 - `desktop/`: janela Electron, processo principal e ponte segura com a interface.
 - `public/`: interface, estilos, ícones necessários, manifesto PWA, service worker e logos usados na interface.
-- `scripts/windows/`: atalhos e utilitários de inicialização para Windows.
 - `scripts/tests/`: scripts de verificação usados durante o desenvolvimento.
 - `scripts/capture-readme.mjs`: recria as capturas do README com dados fictícios.
 - `docs/screenshots/`: capturas de tela sem dados pessoais.

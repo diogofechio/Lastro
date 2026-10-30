@@ -99,6 +99,9 @@ async function post(route, data) {
 }
 
 try {
+  assert.equal(fs.existsSync(path.resolve('scripts/windows')), false, 'obsolete web launchers that invoke command shells have been removed');
+  record('atalhos antigos de navegador e PowerShell removidos');
+
   const investment = await post('/api/investments', { name: 'Carteira inicial', category: 'CDB / RDB' });
   for (const row of [
     { date: '2026-10-27', gross_value: 1010, net_value: 1000 },
