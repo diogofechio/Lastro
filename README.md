@@ -6,7 +6,7 @@ Aplicativo desktop para registrar saldos, acompanhar rendimentos e organizar uma
 
 ## Baixar para Windows
 
-Baixe **Lastro.app Setup 1.0.0.exe** na seção **Releases** deste repositório, execute o instalador e escolha a pasta de instalação. O instalador cria atalhos no Menu Iniciar e, opcionalmente, na Área de Trabalho.
+Baixe **Lastro.app Setup 1.0.1.exe** na seção **Releases** deste repositório, execute o instalador e escolha a pasta de instalação. O instalador cria atalhos no Menu Iniciar e, opcionalmente, na Área de Trabalho.
 
 ## Recursos
 
@@ -53,12 +53,12 @@ npm install
 npm run dist
 ```
 
-O instalador NSIS e os arquivos auxiliares são gerados em `dist/`. Para distribuir uma versão, publique o instalador como ativo de uma **GitHub Release**; não o adicione ao histórico Git, pois o arquivo tem mais de 100 MB. O código-fonte e o `package-lock.json` permitem reproduzir a build.
+O instalador NSIS e os arquivos auxiliares são gerados em `dist/`. Para publicar a versão 1.0.1, crie a tag `v1.0.1` no GitHub e anexe somente `dist/Lastro.app Setup 1.0.1.exe` à **GitHub Release**. Não adicione o instalador ao histórico Git, pois ele tem mais de 100 MB. O código-fonte e o `package-lock.json` permitem reproduzir a build.
 
 ## Estrutura
 
 - `desktop/`: janela Electron, processo principal e ponte segura com a interface.
-- `public/`: interface, estilos, ícones, manifesto PWA e service worker.
+- `public/`: interface, estilos, ícones necessários, manifesto PWA, service worker e três logos SVG usados pela interface.
 - `scripts/windows/`: atalhos e utilitários de inicialização para Windows.
 - `scripts/tests/`: scripts de verificação usados durante o desenvolvimento.
 - `server.js`: servidor local e acesso ao banco SQLite.

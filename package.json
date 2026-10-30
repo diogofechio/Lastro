@@ -1,13 +1,13 @@
 {
   "name": "controle-rendimentos-investimentos",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Controle diário de rendimentos de investimentos (Bruto e Líquido)",
   "main": "desktop/main.js",
   "type": "module",
   "scripts": {
-    "start": "electron .",
+    "start": "node scripts/run-tool.mjs electron .",
     "start:web": "node server.js",
-    "dist": "electron-builder --win"
+    "dist": "node scripts/run-tool.mjs electron-builder --win"
   },
   "keywords": [
     "investimentos",
@@ -41,4 +41,3 @@
     }
   }
 }
-
