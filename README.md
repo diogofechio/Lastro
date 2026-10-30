@@ -26,6 +26,8 @@ O instalador abre uma janela desktop do Lastro.app; o usuário não precisa abri
 
 O app salva a carteira em `%APPDATA%\controle-rendimentos-investimentos\rendimentos.db` no Windows. O atalho para navegador usa esse mesmo banco, preservando os dados existentes. Atualizar o aplicativo também preserva esse banco. Faça backups em **Backup e Configurações** para proteger seus dados.
 
+Consulte a [Política de privacidade](PRIVACY.md) para saber quais dados ficam no computador e quais referências públicas o aplicativo consulta.
+
 Os dados de demonstração exibidos nas imagens deste README são fictícios e não estão no banco do aplicativo.
 
 ## Recursos
