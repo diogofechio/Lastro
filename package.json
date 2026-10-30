@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node scripts/run-tool.mjs electron .",
     "start:web": "node server.js",
-    "dist": "node scripts/run-tool.mjs electron-builder --win",
+    "dist": "node scripts/run-tool.mjs electron-builder --win --publish never",
     "screenshots": "node scripts/capture-readme.mjs"
   },
   "keywords": [
